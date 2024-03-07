@@ -48,7 +48,7 @@ while passfail == False:
     if hit_number == user :
       print(f"[{count}번째] 정답입니다!")
       passfail = True
-    if count > 5:
+    if count > 20:
       raise CountError
     elif hit_number > user:
       print(f"[{count}번째] 숫자가 작습니다. 다시 맞혀보세요.")
