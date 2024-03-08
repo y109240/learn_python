@@ -61,3 +61,19 @@ while passfail == False:
   except CountError:
     print("20번의 기회가 모두 끝났습니다.")
     break
+
+guess_count_list = range(1, 21, 1)
+passfail = False
+for guess_count in guess_count_list:
+  guess= int(input("숫자를 맞혀보세요.(" +str(guess_count)+ "번째 시도): "))
+  if hit_number == guess:
+    passfail = True
+    break
+  elif hit_number > guess:
+    print(str("guess")+"보다 큽니다.", end="")
+  else:
+    print(str("guess")+ "보가 작습니다.", end="")
+if passfail == True:
+  print("맞혔습니다. 축하합니다.")
+else:
+  print("모든 기회를 다 사용하셨습니다. 다음에 다시 도전하세요.")
