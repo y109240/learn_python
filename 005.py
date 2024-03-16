@@ -15,3 +15,10 @@ for i in range(1, 10):
   for j in range(1, 10):
     print(format(i*j,">4d"), end="")
   print()
+
+
+# 전체 표 출력
+for i in range(1, 10):
+  for j in range(2, 10):
+    print(f"{j} x {i} = {j*i:2}", end="\t")
+  print()
