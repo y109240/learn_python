@@ -7,6 +7,18 @@ while len(str(num)) > 1:
 else:
   print(num)
 
+# 재귀함수, reduce()
+from functools import reduce
+def add_digits(num: int) -> int:
+  print(num)
+  if num < 10:
+    return num
+  else:
+    add = lambda x, y : x + y
+    add_digits(reduce(add, [int(x) for x in str(num)]))
+    # add_digits(reduce(lambda x, y: int(x) + int(y), str(num)))
+
+
 # 숫자에 천단위로 컴마넣기
 input_number = input("숫자를 입력해 주세요 : ")
 re_number = input_number[::-1]
