@@ -28,7 +28,7 @@ while True:
     print("명령을 인식할 수 없습니다.", e)
   
   else:
-    if user in "종료":
+    if "종료" in user:
       print("음성 인식 결과 : ", user)
       tts = NaverTTS("음성 인터페이스를 종료합니다.", lang="ko")
       fp = BytesIO()
