@@ -50,16 +50,16 @@ while True:
   else:
     print("음성 인식 결과 : ", user)
     
-    if user in "종료":
+    if "종료" in user:
       ai_answer = "음성인터페이스를 종료합니다."
     
-    elif user in "시간":
+    elif "시간" in user:
       ai_answer = f"지금 {cities}은/는 {today.hour}시 {today.minute}분 입니다."
     
-    elif user in "날짜":
+    elif "날짜" in user:
       ai_answer = f"현재 {cities}은/는 {today.year}년 {today.month}월 {today.day}일 입니다."
     
-    elif user in "날씨":
+    elif "날씨" in user:
       API_KEY = "88d6eee1ee4b6147b48668adf07947eb"
       BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
       city = cities_dict[cities[0]][cities_dict[cities[0]].find("/")+1:]
@@ -84,11 +84,11 @@ while True:
     my_sound = AudioSegment.from_file(fp, format="mp3")
     play(my_sound)
 
-    if user in "종료":
+    if "종료" in user:
       break
 
 
 # 덧붙일 내용 : 미세먼지 알려줘
-# in을 썻는데도 "시간"은 인식하고 "지금 시간"은 인식하지 못함. 왜?
-# 018에서도 시간과 날짜는 인식하지만 종료는 다른말과 덧붙였을때 인식하지 못함.
+# in을 썻는데도 "시간"은 인식하고 "지금 시간"은 인식하지 못함. 왜? : in기준 반대로 씀
+# 018에서도 시간과 날짜는 인식하지만 종료는 다른말과 덧붙였을때 인식하지 못함. 고침
 # 날씨 정보에서 도시이름 찾아내는법?
