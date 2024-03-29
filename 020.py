@@ -115,3 +115,55 @@ def report_weather(user_command: str) -> None:
     else:
       text_to_speech("날씨 정보를 받아오지 못했습니다.")
 
+
+def find_keyword(keywords: list[str], sentence: str, default: str = "") -> str:
+  """주어진 문장에서 가장 처음 발견되는 keyword 반환
+  Args:
+    keywords (list[str]): 찾고자 하는 키워드의 리스트 예) ["날씨", "시간"]
+    sentence (str): 키워드를 찾아볼 문장 예) "날씨를 알려주세요"
+    default (str): 키워드가 하나도 없을 경우 반환할 문자열
+  Returns:
+    str: 문장 안에서 처음 발견한 키워드. 없을 경우 default 반환.
+  """
+
+  keywords = ["시간", "날짜", "날씨"]
+  sentence = speech_to_text()
+  for k in keywords:
+    if k in sentence:
+      return k
+    else:
+      return default
+
+
+# [보충] 여기서 Callable[[str], None]은 str을 입력으로 받고 None을 반환하는 함수의 타입힌트입니다.
+def listen_and_report(command_callbacks: dict[str, Callable[[str], None]]) -> bool:
+  """마이크를 통해 음성을 입력받고 명령을 수행
+  1. speech_to_text() 함수로 사용자 음성으로부터 명령문 인식
+  2. 인식된 명령문에 "종료"가 포함되어 있을 경우 "종료합니다." 음성 안내 후 False 반환
+  3. 인식된 명령문에 command_callbacks의 key에 해당하는 단어가 포함되어 있을 경우 함수 객체 실행
+  Args:
+    command_callbacks (dict[str, function]): 명령문에 key가 포함되었을 경우 value 함수 실행
+  Returns:
+    bool: 프로그램을 계속 진행할 경우 True, 종료할 경우 False
+  """
+
+  speech_to_text()
+  if "종료" in speech_to_text():
+    text_to_speech("종료합니다.")
+    return False
+  else:
+    for i in command_callbacks:
+      if i in speech_to_text():
+        command_callbacks[i]
+        return True
+
+
+command_callbacks = {
+  "시간": report_daytime,
+  "날씨": report_weather,
+}
+
+while listen_and_report(command_callbacks):
+  continue
+
+# 제대로 실행되지 않음
