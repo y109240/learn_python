@@ -79,12 +79,15 @@ def delete_person():
 contact_data = {}
 
 if os.path.isfile("my_contacts.json"):
-    with open("my_contacts.json", encoding="utf8") as file:
-        contact_data = json.load(file)
-
+    try:
+        with open("my_contacts.json", encoding="utf8") as file:
+            contact_data = json.load(file)
+    except Exception as e:
+        print("파일을 읽는 도중 오류가 발생했습니다:", e)
 
 # main_menu()로 받아온 사용자의 입력에 따라 함수 호출
-while (selected := main_menu()) != 5:
+while True:
+    selected = main_menu()
     if selected == 1:
         find_person()
     elif selected == 2:
@@ -93,12 +96,12 @@ while (selected := main_menu()) != 5:
         delete_person()
     elif selected == 4:
         show_all()
-else:
-    # 종료하기 전 파일로 데이터 저장
-    with open("my_contacts.json", "w", encoding="utf8") as file:
-        for i in len(contact_data):
-            file.write(f"{contact_data[i]} {contact_data[i]['Phone']} {contact_data[i]['Email']}")
-        file.close()
-    print("종료합니다.")
-
-# 파일 입출력에서 에러
+    elif selected == 5:
+        # 종료하기 전 파일로 데이터 저장
+        try:
+            with open("my_contacts.json", "w", encoding="utf8") as file:
+                json.dump(contact_data, file, indent=4, ensure_ascii=False)
+            print("종료합니다.")
+            break
+        except Exception as e:
+            print("파일을 저장하는 도중 오류가 발생했습니다:", e)
