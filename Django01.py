@@ -1,5 +1,6 @@
 ## Boookmark ##
 
+
 # models.py : 테이블 생성
 from django.db import models
 class Bookmark(models.Model):
@@ -38,6 +39,7 @@ from bookmark.models import Bookmark
 from django.template import loader
 from django.http.response import HttpResponse
 
+# http://localhost:8000/bookmark
 def home(request):
     urllist = Bookmark.objects.order_by("title")
     # select * from bookmark_bookmark order by title;
@@ -50,7 +52,7 @@ def home(request):
         }
     return HttpResponse(template.render(context, request))
 
-#http://localhost:8000/bookmark/detail
+# http://localhost:8000/bookmark/detail
 def detail(request):
     url = request.GET["url"]
     dto = Bookmark.objects.get(url=url)
@@ -58,7 +60,7 @@ def detail(request):
     return HttpResponse(template.render({"dto":dto}, request))
 
 
-## templates (Package)
+## templates (Package) : 보여주는 페이지
 
 # detail.html
 # <!DOCTYPE html>
