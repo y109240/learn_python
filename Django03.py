@@ -175,16 +175,43 @@ class UpdateView(View):
         return redirect("/guestbook")
 
 
-# guestbook.html
+# base.html
 # <!DOCTYPE html>
 # <html>
 # 	<head>
 # 		<meta charset="UTF-8">
-# 		<title> Guestbook </title>
+# 		<title> {% block title %} MainPage {% endblock%} </title>
 # 	</head>
 # 	<body>
-# 		<h2> 글목록 </h2>
+# 		<h2> {% block subject %} 메인 페이지 {% endblock%} </h2>
+# 		<br><br>
+# 		{% block menubar%}
+# 			<ul>
+# 				<li> <a href="http://localhost:8000/bookmark"> Bookmark </a> </li>
+# 				<li> <a href="http://localhost:8000/survey"> Survey </a> </li>
+# 				<li> <a href="http://localhost:8000/guestbook"> Guestbook </a> </li>
+# 			</ul>
+# 		{% endblock%}
 # 		<br>
+# 		{% block content %}
+# 			내용이 없습니다. <br>
+# 		{% endblock %}
+# 	</body>
+# </html>
+
+
+# guestbook.html
+# {% extends "base.html" %}
+# <!DOCTYPE html>
+# <html>
+# 	<head>
+# 		<meta charset="UTF-8">
+# 		<title> {% block title %} Guestbook {% endblock %} </title>
+# 	</head>
+# 	<body>
+# 		<h2> {% block subject %} 글목록 {% endblock %} </h2>
+# 		<br>
+# 		{% block content %}
 # 		{{ gbcount }}개의 글이 있습니다.
 # 		<br><br>
 # 		<input type="button" value="글쓰기" onclick="location='write'">
@@ -192,17 +219,18 @@ class UpdateView(View):
 # 			<form method="post" action="passwdck">
 # 				{% csrf_token %}
 # 				<input type="hidden" name="idx" value="{{ gb.idx }}">
-# 				<table border="1" style="margin: 5px 0px">
+# 				<table border="1" style="margin:5px 0px">
 # 					<tr>
 # 						<th width="100"> 이름 </th>
-# 						<td width="100" align="center"> {{ gb.name }}  </td>
+# 						<td width="100" align="center"> {{ gb.name }} </td>
 # 						<th width="100"> 작성일 </th>
-# 						<td width="100" align="center"> {{ gb.postdate|date:"Y-m-d" }} </td>						
-# 					</tr>	
+# 						<td width="100" align="center"> {{ gb.postdate|date:"Y-m-d" }} </td>
+# 						<!-- H:i:s -->
+# 					</tr>
 # 					<tr>
 # 						<th> 이메일 </th>
-# 						<td colspan="3"> {{ gb.email }} </td>
-# 					</tr>				
+# 						<td colsapn="3"> {{ gb.email }} </td>
+# 					</tr>
 # 					<tr>
 # 						<th> 내용 </th>
 # 						<td colspan="3"> <pre>{{ gb.content }}</pre> </td>
@@ -211,11 +239,109 @@ class UpdateView(View):
 # 						<th> 비밀번호 </th>
 # 						<td colspan="2"> <input type="password" name="passwd"> </td>
 # 						<th>
-# 							<input type="submit" value="수정 / 삭제">
-# 						</th>						
+# 							<input type="submit" value="수정/삭제">
+# 						</th>
 # 					</tr>
 # 				</table>
-# 			</form>		
-# 		{% endfor %}	
+# 			</form>
+# 		{% endfor %}
+# 		{% endblock %}
+# 	</body>
+# </html>
+
+
+# write.html
+# {% extends "base.html" %}
+# <!DOCTYPE html>
+# <html>
+# 	<head>
+# 		<meta charset="UTF-8">
+# 		<title> {% block title %} Guestbook {% endblock %} </title>
+# 	</head>
+# 	<body>
+# 		<h2> {% block subject %} 글 작성 {% endblock %} </h2>
+# 		<br><br>
+# 		{% block content %}
+# 		<form method="post" action="write">
+# 			{% csrf_token %}
+# 			<table border="1">
+# 			<tr>
+# 				<th colspan="2"> 회원정보를 입력하세요. </th>
+# 			</tr>
+# 			<tr>
+# 				<th> 이름 </th>
+# 				<td> <input type="text" name="name" maxlength="50" autofocus> </td>
+# 			</tr>
+# 			<tr>
+# 				<th> 이메일 </th>
+# 				<td> <input type="email" name="email" maxlength="50"> </td>
+# 			</tr>
+# 			<tr>
+# 				<th> 비밀번호 </th>
+# 				<td> <input type="password" name="passwd" maxlength="50"> </td>
+# 			</tr>
+# 			<tr>
+# 				<th> 내용 </th>
+# 				<td>
+# 					<textarea rows="5" cols="30" name="content"></textarea>
+# 				</td>
+# 			</tr>
+# 			<tr>
+# 				<th colspan="2">
+# 					<input type="submit" value="작성">
+# 					<input type="reset" value="취소">
+# 				</th>
+# 			</tr>
+# 			</table>
+# 		</form>
+# 		{% endblock %}
+# 	</body>
+# </html>
+
+
+# edit.html
+# {% extends "base.html" %}
+# <!DOCTYPE html>
+# <html>
+# 	<head>
+# 		<meta charset="UTF-8">
+# 		<title> {% block title %} Guestbook {% endblock %} </title>
+# 	</head>
+# 	<body>
+# 		<h2> {% block subject %} 글 수정 {% endblock %} </h2>
+# 		<br><br>
+# 		{% block content %}
+# 		<form method="post" action="update">
+# 			{% csrf_token %}
+# 			<input type="hidden" name="idx" value="{{ dto.idx }}">
+# 			<table border="1">
+# 				<tr>
+# 					<th colspan="2"> 수정할 정보를 입력하세요. </th>
+# 				</tr>
+# 				<tr>
+# 					<th> 이름 </th>
+# 					<td> {{ dto.name }} </td>
+# 				</tr>
+# 				<tr>
+# 					<th> 이메일 </th>
+# 					<td> <input type="email" name="email" maxlength="50" value="{{ dto.email }}"> </td>
+# 				</tr>
+# 				<tr>
+# 					<th> 비밀번호 </th>
+# 					<td> <input type="password" name="passwd" maxlength="50" value="{{ dto.passwd }}"> </td>
+# 				</tr>
+# 				<tr>
+# 					<th> 내용 </th>
+# 					<td> <textarea rows="5" cols="30" name="content">{{ dto.content }}</textarea> </td>
+# 				</tr>
+# 				<tr>
+# 					<th colspan="2">
+# 						<input type="submit" value="수정">
+# 						<input type="button" value="삭제" onclick="location='update?idx={{dto.idx}}'">
+# 						<input type="button" value="목록" onclick="location='http://localhost:8000/guestbook'">				
+# 					</th>				
+# 			</table>		
+# 		</form>
+# 		{% endblock %}
 # 	</body>
 # </html>
