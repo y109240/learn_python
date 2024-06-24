@@ -1,0 +1,153 @@
+## 회원관리+게시판 ##
+
+
+# 세팅하는법
+PyDev Django Project		# 새 프로젝트 생성
+cmd > cd 프로젝트파일경로
+>python manage.py makrmigrations	#
+>python manage.py migrate		#
+>python manage.py createsuperuser	# 관리자 생성
+(
+admin
+
+admin1234
+admin1234
+) 
+>python manage.py runserver	# http://localhost:8000 서버동작확인
+ProjectEx/settings.py		# 세팅 확인 수정
+LANGUAGE_CODE = 'ko-kr'		# 한국어 설정 d='en-us'
+TIME_ZONE = 'Asia/Seoul'		# 한국시간대 설정 d='UTC'
+# 설정변경후 서버 재시동
+
+import os
+'DIRS': [os.path.join( BASE_DIR, 'templates' )],	# 템플릿 따로
+PyDevPackage : templates ( .member .board )	# 메인 템플릿에 멤버 보드 템플릿 생성
+
+# static 경로설정 PyDevPackage
+static.member ( .css .js .images )
+static.board ( .css .js .images )
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join( BASE_DIR, 'static' )]
+STATIC_ROOT = os.path.join( BASE_DIR, '.static' )
+
+# media 경로설정 PyDevPackage
+media.member
+media.board
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join( BASE_DIR, 'media' )
+
+# cmd app 생성
+>python manage.py startapp member
+>python manage.py startapp board
+
+INSTALLED_APPS = [
+	...
+	'member.apps.MemberConfig',
+	'board.apps.BoardConfig',
+	]
+
+# 로깅 : 프로그램 중간중간 로그들을 쌓아서 에러잡고 데이터추가
+logger.debug()
+logger.info()
+logger.warning()
+logger.error()
+logger.critical()
+직접 만든 에러도 가능
+LOGGING = {
+    ...
+}
+
+# views.py
+import logging
+logger = logging.getLogger(__name__)
+
+
+LOGGING = {
+    'version' : 1,
+    'disable_existing_loggers' : False,
+    'formatters' : {
+        "format1" : {       # 파일 출력 형식
+            'format' : '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+            'datefmt' : '%Y-%m-%d %H:%M:%S'
+        },
+        "format2" : {       # 콘솔 출력 형식
+            'format' : '%(levelname)s %(message)s'
+        },
+    },
+    'handlers' : {
+        'file' : {          # 파일 로그 처리
+            "level" : 'INFO',
+            'class' : 'logging.handlers.RotatingFileHandler',
+            'filename' : os.path.join( BASE_DIR, 'log/logfile.log' ),
+            'encoding' : 'UTF-8',
+            'maxBytes' : 1024 * 1024 * 5,   # 5MB
+            'backupCount' : 5,
+            'formatter' : 'format1',
+        },
+        'console' : {       # 콘솔 로그 처리
+            'level' : 'DEBUG',
+            'class' : 'logging.StreamHandler',
+            'formatter' : 'format2',
+        }
+    },
+    'loggers' : {
+        'django' : {
+            'handlers' : ['console'],
+            'propagate' : True,
+            'level' : 'WARNING'
+        },
+        'django.request' : {
+            'handlers' : ['console'],
+            'propagate' : True,
+            'level' : 'WARNING'
+        },
+        'member' : {
+            'handlers' : ['file'],
+            'propagate' : True,
+            'level' : 'DEBUG'
+        },
+        'board' : {
+            'handlers' : ['file'],
+            'propagate' : True,
+            'level' : 'DEBUG'
+        },
+    },
+}
+
+
+# urls
+ProjectEx\urls.py
+
+from django.contrib import admin
+from django.urls import path
+from member.urls import views
+from django.urls.conf import include
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path( '', views.IndexView.as_view(), name="index" ),
+    # localhost:8000
+    path( 'member/', include( 'member.urls' ) ),
+    # localhost:8000/member
+    path( 'board/', include( 'board.urls' ) ),
+    # localhost:8000/board
+]
+
+from django.contrib import admin
+from django.urls import path
+from django.urls.conf import include
+from django.views.generic.base import TemplateView
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path( '', TemplateView.as_view( template_name="index.html" ), name="index" ),
+    # localhost:8000
+    path( 'member/', include( 'member.urls' ) ),
+    # localhost:8000/member
+    path( 'board/', include( 'board.urls' ) ),
+    # localhost:8000/board
+]
+
+PyDevModule
+member\urls.py
+board\urls.py
+
+# templates\index.html
