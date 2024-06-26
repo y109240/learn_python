@@ -15,6 +15,14 @@ class Member( models.Model ) :          # member_member
     logtime = models.DateTimeField( auto_now_add=True, verbose_name="가입일자", null=False, blank=True )
 
 
+# member/admin.py
+from django.contrib import admin
+from member.models import Member
+class MemberAdmin( admin.ModelAdmin ) :
+    list_display = ( "id", "passwd", "name", "email", "tel", "depart" )
+admin.site.register( Member, MemberAdmin ) 
+
+
 # member/urls.py
 from django.views.generic.base import TemplateView
 from django.urls.conf import path
