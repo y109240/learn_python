@@ -151,3 +151,10 @@ member\urls.py
 board\urls.py
 
 # templates\index.html
+
+
+## 서버 외부 접속 ##
+settings.py
+ALLOWED_HOSTS = ["localhost", 127.0.0.1, "IP주소"]
+>python manage.py renserver 0.0.0.0:8000
+IP주소:8000/...
