@@ -146,21 +146,123 @@ class WriteView( View ) :
         dto.save()
         return redirect( "http://localhost:8000/board" )
 
-class DetailView( View ) :
-    def get( self, request ) :         
-        pagenum = request.GET["pagenum"]
+class DeleteView( View ) :
+    def get( self, request ) :
         num = request.GET["num"]
-        number = request.GET["number"]
-        dto = Board.objects.get( num = num )
-        if dto.ip != request.META.get( "REMOTE_ADDR" ) :
-            dto.readcount += 1
-            dto.save()
+        pagenum = request.GET["pagenum"]
         context = {
-            "pagenum" : pagenum,
-            "dto" : dto,
-            "number" : number
-            }
-        template = loader.get_template( "board/detail.html" )
-        return HttpResponse( template.render( context, request ) )        
+            "num" : num,
+            "pagenum" : pagenum
+            }        
+        template = loader.get_template( "board/delete.html" )
+        return HttpResponse( template.render( context, request ) )
     def post( self, request ) :
-        pass
+        num = request.POST["num"]
+        pagenum = request.POST["pagenum"]
+        passwd = request.POST["passwd"]
+        dto = Board.objects.get( num = num )
+        if passwd == dto.passwd :
+            # 비밀번호가 같다
+            res = Board.objects.filter( ref__exact=dto.ref ).filter( restep__exact=dto.restep+1 ).filter( relevel__gt=dto.relevel )
+            if len( res ) == 0 :
+                # 답글이 없는 경우               
+                rs = Board.objects.filter( ref__exact=dto.ref ).filter( restep__gt=dto.restep ) 
+                for r in rs :
+                    r.restep = int( r.restep ) - 1
+                    r.save()   
+                dto.delete()
+                
+                #             ref    restep    relevel
+                # 제목글        10        0        0        
+                # ㄴ 답글       10        2        1
+                #   ㄴ 재답글    10        3        2
+                # ㄴ 나중답글    10        1        1
+                #
+                # ref        ==
+                # restep     > restep + 1
+                # relevel    >
+                
+            else :
+                # 답글이 있는 경우
+                dto.readcount = -1
+                dto.save()  
+            return redirect( "/board/?pagenum=" + pagenum )              
+        else :
+            # 비밀번호가 다르다
+            context = {
+                "num" : num,
+                "pagenum" : pagenum,
+                "message" : "비밀번호가 다릅니다"
+                }
+            template = loader.get_template( "board/delete.html" )
+            return HttpResponse( template.render( context, request ) )     
+
+class UpdateView( View ) :       
+    def get(self, request ) :
+        num = request.GET["num"]
+        pagenum = request.GET["pagenum"]
+        context = {
+            "num" : num,
+            "pagenum" : pagenum,
+            }
+        template = loader.get_template( "board/update.html" )
+        return HttpResponse( template.render( context, request ) )        
+    def post(self, request ) :
+        num = request.POST["num"]
+        pagenum = request.POST["pagenum"]
+        passwd = request.POST["passwd"]
+        dto = Board.objects.get( num = num )
+        if( passwd == dto.passwd ) :            
+            context = {
+                "num" : num,
+                "pagenum" : pagenum,
+                "dto" : dto,
+                }
+            template = loader.get_template( "board/updatepro.html" )
+            return HttpResponse( template.render( context, request ) )
+        else :            
+            context = {
+                "num" : num,
+                "pagenum" : pagenum,
+                "message" : "비밀번호가 다릅니다",
+                }
+            template = loader.get_template( "board/update.html" )
+            return HttpResponse( template.render( context, request ) )
+
+class UpdateProView( View ) :        
+    def post(self, request ) :
+        num = request.POST["num"]
+        pagenum = request.POST["pagenum"]
+        dto = Board.objects.get( num = num )
+        dto.subject = request.POST["subject"]
+        dto.content = request.POST["content"]
+        dto.passwd = request.POST["passwd"]
+        dto.save()
+        return redirect( "/board/?pagenum=" + pagenum )    
+
+
+class ImageView( View ) :
+    def get(self, request ) :        
+        context = {}
+        template = loader.get_template( "board/imageupload.html" )
+        return HttpResponse( template.render( context, request ) )        
+    def post(self, request ) :
+        title = request.POST["title"]
+        img = request.FILES["image"]        
+        name = img.name
+        dto = ImageBoard(
+            title = title,
+            image = img,
+            name = name,
+            );
+        dto.save()
+        return redirect( "imageview" )
+
+class ImageViewView( View ) :
+    def get(self, request ) :       
+        dtos = ImageBoard.objects.all()
+        context = {
+            "dtos" : dtos,
+            }
+        template = loader.get_template( "board/imageview.html" )
+        return HttpResponse( template.render( context, request ) )
